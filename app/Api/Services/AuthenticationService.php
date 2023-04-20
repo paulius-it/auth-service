@@ -3,13 +3,14 @@
 namespace App\Api\Services;
 
 use App\Api\Common\ProviderConstants;
+use App\Api\Interfaces\Authenticatable;
 use App\Api\Services\TokenCacheService;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
-class AuthenticationService
+class AuthenticationService implements Authenticatable
 {
     private Collection $errors; // For error handleing during API authentication
     private string $baseApiUrl;
