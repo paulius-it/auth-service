@@ -44,7 +44,7 @@ class AuthenticationService
         }
 
         try {
-            $apiResponse = HTTP::asForm()->post($this->baseApiUrl, $requestParams);
+            $lpApiResponse = HTTP::asForm()->post($this->baseApiUrl, $requestParams);
         } catch (\Exception $e) {
             $this->addError('Authentication failed: ' . $e->getMessage());
         }
@@ -60,8 +60,16 @@ class AuthenticationService
 
         $response = [
             'status_code' => 200,
-            'apiResponse' => $apiResponse->body(),
+            //'lp_api_response' => $lpApiResponse->body(),
         ];
+
+        if ($lpApiResponse) {
+            $response['lp_api_response'] = $lpApiResponse->body();
+        }
+
+        if ($omnivaResponse) {
+            $response['omniva_api_response'] = $omnivaApiResponse->body();
+        }
 
         return response()->json($response);
     }
