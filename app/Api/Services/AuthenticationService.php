@@ -3,7 +3,9 @@
 namespace App\Api\Services;
 
 use App\Api\Common\ProviderConstants;
-use App\Api\Services\ApiAuth;
+use App\Api\Services\TokenCacheService;
+use Illuminate\Http\Client\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
@@ -12,15 +14,19 @@ class AuthenticationService
     private Collection $errors; // For error handleing during API authentication
     private string $baseApiUrl;
 
-    public function authenticate(?array $providers = null)
+    public function __construct(private TokenCacheService $tokenCache)
+    {
+    }
+
+    public function authenticate(?array $providers = null): JsonResponse
     {
         $this->errors = collect();
         if (!$providers) {
             $this->addError('No APIs to authenticate');
         }
 
-        $lpProvider = $providers['LP'] ?? null;
-        $omnivaProvider = $providers['OM'] ?? null;
+        $lpProvider = $providers['lp_express'] ?? null;
+        $omnivaProvider = $providers['omniva'] ?? null;
 
         $lpConfig = [
             'api_access_key' => config("shipping.providers.lp_express.api_access_key", ''),
@@ -60,16 +66,15 @@ class AuthenticationService
 
         $response = [
             'status_code' => 200,
-            //'lp_api_response' => $lpApiResponse->body(),
         ];
 
         if ($lpApiResponse) {
             $response['lp_api_response'] = $lpApiResponse->body();
         }
 
-        if ($omnivaResponse) {
-            $response['omniva_api_response'] = $omnivaApiResponse->body();
-        }
+        $tokensCached = $this->cacheTokens($lpApiResponse);
+
+        $response['tokens_cached'] = $tokensCached;
 
         return response()->json($response);
     }
@@ -77,5 +82,22 @@ class AuthenticationService
     private function addError(string $error)
     {
         $this->errors->prepend($error);
+    }
+
+    private function cacheTokens(?Response $lpApiData = null, ?Response $omnivaApiData = null): bool
+    {
+        $lpAccessToken = $lpApiData->json('access_token') ?? null;
+        $lpRefreshToken = $lpApiData->json('refresh_token') ?? null;
+        $lpTokenExpiresIn = $lpApiData->json('expires_in') ?? null;
+
+        $tokenData = [
+            'lp_express' => [
+                'name' => 'lp_express',
+                'access_token' => $lpAccessToken,
+                'refresh_token' => $lpRefreshToken,
+                'expires_in' => $lpTokenExpiresIn,
+            ],
+        ];
+        return $this->tokenCache->cacheApiTokens($tokenData);
     }
 }
