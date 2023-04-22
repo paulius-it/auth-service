@@ -4,13 +4,14 @@ namespace App\Api\Services;
 
 use App\Api\Common\ProviderConstants;
 use App\Api\Interfaces\Authenticatable;
+use App\Api\Interfaces\ConfigurationInterface;
 use App\Api\Services\TokenCacheService;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
-class AuthenticationService implements Authenticatable
+class AuthenticationService implements Authenticatable, ConfigurationInterface
 {
     private Collection $errors; // For error handleing during API authentication
     private string $baseApiUrl;
@@ -29,15 +30,9 @@ class AuthenticationService implements Authenticatable
         $lpProvider = $providers['lp_express'] ?? null;
         $omnivaProvider = $providers['omniva'] ?? null;
 
-        $lpConfig = [
-            'api_access_key' => config("shipping.providers.lp_express.api_access_key", ''),
-            'api_secret' => config("shipping.providers.lp_express.api_secret", ''),
-        ];
+        $lpConfig = $this->getApiConfig(provider: 'lp_express');
 
-        $omnivaConfig = [
-            'api_access_key' => config("shipping.providers.omniva.api_access_key", ''),
-            'api_secret' => config("shipping.providers.omniva.api_secret", ''),
-        ];
+        $omnivaConfig = $this->getApiConfig(provider: 'omniva');
 
         if ($lpConfig['api_access_key'] && $lpConfig['api_secret']) {
             $this->baseApiUrl = ProviderConstants::BASE_LP_EXPRESS_API_URL;
@@ -73,19 +68,44 @@ class AuthenticationService implements Authenticatable
             $response['lp_api_response'] = $lpApiResponse->body();
         }
 
-        $tokensCached = $this->cacheTokens($lpApiResponse);
+        $tokensCached = $this->cacheLpApiTokens($lpApiResponse);
 
         $response['tokens_cached'] = $tokensCached;
 
         return response()->json($response);
     }
 
+    public function getApiConfig(?string $provider = null): array
+    {
+        switch ($provider) {
+            case 'lp_express':
+                $config = [
+                    'api_access_key' => config("shipping.providers.lp_express.api_access_key", ''),
+                    'api_secret' => config("shipping.providers.lp_express.api_secret", ''),
+                ];
+                break;
+            case 'omniva':
+                $config = [
+                    'api_access_key' => config("shipping.providers.omniva.api_access_key", ''),
+                    'api_secret' => config("shipping.providers.omniva.api_secret", ''),
+                ];
+                break;
+            default:
+                $config = []; // No other option
+        }
+
+        return $config;
+    }
+
+
+
+
     private function addError(string $error)
     {
         $this->errors->prepend($error);
     }
 
-    private function cacheTokens(?Response $lpApiData = null, ?Response $omnivaApiData = null): bool
+    private function cacheLpApiTokens(?Response $lpApiData = null): bool
     {
         $lpAccessToken = $lpApiData->json('access_token') ?? null;
         $lpRefreshToken = $lpApiData->json('refresh_token') ?? null;

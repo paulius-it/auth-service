@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * Used to cache received API tokens
+ * Note: only applicable to LP Express API!
  */
 class TokenCacheService
 {
