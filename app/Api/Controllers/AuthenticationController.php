@@ -16,7 +16,7 @@ class AuthenticationController extends ApiController
 
     public function authenticate(Request $request): JsonResponse
     {
-        $providers = json_decode($request->input('providers'), true);
+        $providers = $request->input('providers') ?? null;
 
         $authResult = $this->auth->authenticate($providers);
 
