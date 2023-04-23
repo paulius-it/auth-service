@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-         $schedule->command('cron:refreshLPExpressAccessToken')->every10Minutes()->withoutOverlapping()->runInBackground();
+         $schedule->command('cron:refreshLPExpressAccessToken')->everyTenMinutes()->withoutOverlapping()->runInBackground();
     }
 
     /**

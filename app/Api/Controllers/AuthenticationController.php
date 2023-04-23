@@ -24,7 +24,7 @@ class AuthenticationController extends ApiController
 
         $authResult = $this->auth->authenticate(
             providers: $providers,
-            cacheTokens: $cacheToken);
+            cacheTokens: $cacheTokens);
 
             $jsonData = json_decode($authResult->content());
 
@@ -51,7 +51,7 @@ class AuthenticationController extends ApiController
 
         switch ($provider) {
             case 'lp_express':
-                $accessToken = $this->cache->getLpExpressApiToken();
+                $accessToken = $this->cache->getLpExpressApiAccessToken();
 
                 if ($accessToken) {
                     $result['lp_express_access_token'] = $accessToken;

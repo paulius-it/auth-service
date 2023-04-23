@@ -80,12 +80,12 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
             $response['lp_api_response'] = $lpApiResponse->body();
         }
 
-        if ($cacheToken) {
+        if ($cacheTokens) {
             $tokensCached = $this->cacheLpApiTokens($lpApiResponse);
 
             $response['lp_token_cached'] = $tokensCached;
         } else {
-            $response['lp_token_cached'] = $cacheToken;
+            $response['lp_token_cached'] = $cacheTokens;
         }
 
         return response()->json($response);

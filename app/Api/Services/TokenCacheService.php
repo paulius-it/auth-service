@@ -2,6 +2,7 @@
 
 namespace App\Api\Services;
 
+use Carbon;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -20,7 +21,7 @@ class TokenCacheService
                 case 'lp_express':
                     Cache::put('app.apiProviders.' . $provider . '.access_token', $info['access_token'], $info['expires_in']);
                     Cache::put('app.apiProviders.' . $provider . '.refresh_token', $info['refresh_token'], $info['expires_in']);
-                    Cache::put('app.lp_token_expires_in', $info['expires_in']);
+                    Cache::put('app.lp_token_expires_in', Carbon::now()->addSeconds($info['expires_in']));
                     break;
             } // Not required for omniva, so skipping
         }

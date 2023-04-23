@@ -34,7 +34,7 @@ class RefreshLpExpressApiAccessToken extends Command
         // Token is expired or doesn't exist, so we need to request a new token. But before this, let's clear the expiration time from the cache
         Cache::forget('app.lp_token_expires_in');
 
-        $response = $this->auth->authenticate(
+        $response = $authentication->authenticate(
             providers: ['lp_express'],
             cacheTokens: true,
             needsRefresh: true,
