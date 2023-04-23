@@ -18,14 +18,14 @@ class TokenCacheService
 
             switch ($provider) {
                 case 'lp_express':
-                    Cache::put('app.apiProviders.' . $provider . 'access_token', $info['access_token'], $info['expires_in']);
-                    Cache::put('app.apiProviders.' . $provider . 'refresh_token', $info['refresh_token'], $info['expires_in']);
+                    Cache::put('app.apiProviders.' . $provider . '.access_token', $info['access_token'], $info['expires_in']);
+                    Cache::put('app.apiProviders.' . $provider . '.refresh_token', $info['refresh_token'], $info['expires_in']);
                     break;
             }
         }
 
-        $lpCacheResult = Cache::has('app.apiProviders.' . $provider . 'access_token')
-            && Cache::has('app.apiProviders.' . $provider . 'refresh_token');
+        $lpCacheResult = Cache::has('app.apiProviders.' . $provider . '.access_token')
+            && Cache::has('app.apiProviders.' . $provider . '.refresh_token');
 
         return $lpCacheResult;
     }
@@ -42,10 +42,12 @@ class TokenCacheService
         if (!Cache::has($key)) {
             return null;
         }
+
         $token = Cache::get($key);
 
         if ($token) {
-            return 'berer ' . $token;
+            return 'Bearer ' . $token;
         }
+        return null;
     }
 }

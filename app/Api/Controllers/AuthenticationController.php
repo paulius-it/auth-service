@@ -26,7 +26,9 @@ class AuthenticationController extends ApiController
             providers: $providers,
             cacheToken: $cacheToken);
 
-        $statusCode = $authResult->json('status_code');
+            $jsonData = json_decode($authResult->content());
+
+        $statusCode = $jsonData->status_code;
 
         return response()->json($authResult->content(), $statusCode);
     }
