@@ -31,7 +31,6 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
         $omnivaProvider = $providers['omniva'] ?? null;
 
         $lpConfig = $this->getApiConfig(provider: 'lp_express');
-
         $omnivaConfig = $this->getApiConfig(provider: 'omniva');
 
         if ($lpConfig['api_access_key'] && $lpConfig['api_secret']) {

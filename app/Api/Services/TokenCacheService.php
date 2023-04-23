@@ -5,7 +5,7 @@ namespace App\Api\Services;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Used to cache received API tokens
+ * Used to cache and retrieve API tokens
  * Note: only applicable to LP Express API!
  */
 class TokenCacheService
@@ -32,15 +32,20 @@ class TokenCacheService
 
     /**
      * Gets API token from cache
+     * 
+     * @return string
      */
-    public function getApiAccessToken(string $provider): ?string
+    public function getLpExpressApiAccessToken(): ?string
     {
-        $key = 'app.apiProviders.' . $provider . 'access_token';
+        $key = 'app.apiProviders.lp_express.access_token';
 
-        if (Cache::has($key)) {
-            return Cache::get($key);
+        if (!Cache::has($key)) {
+            return null;
         }
+        $token = Cache::get($key);
 
-        return null;
+        if ($token) {
+            return 'berer ' . $token;
+        }
     }
 }
