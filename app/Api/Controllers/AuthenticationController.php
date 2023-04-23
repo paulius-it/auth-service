@@ -20,7 +20,11 @@ class AuthenticationController extends ApiController
     {
         $providers = $request->input('providers') ?? null;
 
-        $authResult = $this->auth->authenticate($providers);
+        $cacheToken = $request->boolean('cache');
+
+        $authResult = $this->auth->authenticate(
+            providers: $providers,
+            cacheToken: $cacheToken);
 
         $statusCode = $authResult->json('status_code');
 

@@ -20,7 +20,8 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
     {
     }
 
-    public function authenticate(?array $providers = null): JsonResponse
+    public function authenticate(?array $providers = null,
+    bool $cacheToken = false): JsonResponse
     {
         $this->errors = collect();
         if (!$providers) {
@@ -67,9 +68,13 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
             $response['lp_api_response'] = $lpApiResponse->body();
         }
 
-        $tokensCached = $this->cacheLpApiTokens($lpApiResponse);
+        if($cacheToken) {
+            $tokensCached = $this->cacheLpApiTokens($lpApiResponse);
 
-        $response['tokens_cached'] = $tokensCached;
+        $response['lp_token_cached'] = $tokensCached;
+        } else {
+            $response['lp_token_cached'] = $cacheToken;
+        }
 
         return response()->json($response);
     }
