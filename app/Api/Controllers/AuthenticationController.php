@@ -20,11 +20,11 @@ class AuthenticationController extends ApiController
     {
         $providers = $request->input('providers') ?? null;
 
-        $cacheToken = $request->boolean('cache');
+        $cacheTokens = $request->boolean('cache');
 
         $authResult = $this->auth->authenticate(
             providers: $providers,
-            cacheToken: $cacheToken);
+            cacheTokens: $cacheToken);
 
             $jsonData = json_decode($authResult->content());
 
@@ -51,15 +51,19 @@ class AuthenticationController extends ApiController
 
         switch ($provider) {
             case 'lp_express':
-                $accessToken = $this->cache->getLpExpressApiAccessToken();
+                $accessToken = $this->cache->getLpExpressApiToken();
 
                 if ($accessToken) {
                     $result['lp_express_access_token'] = $accessToken;
                     $result['status_code'] = 200;
                     $result['message'] = 'Success';
+
+                    if($request->input('refresh_token')) {
+                        $result['lp_express_refresh_token'] = $this->cache->getLpExpressApiToken(refresh: true);
+                    }
                 } else {
                     $result['status_code'] = 400;
-                    $result['message'] = 'LP Access token was not found!';
+                    $result['message'] = 'LP token was not found!';
                 }
                 break;
             case 'omniva':

@@ -20,8 +20,9 @@ class TokenCacheService
                 case 'lp_express':
                     Cache::put('app.apiProviders.' . $provider . '.access_token', $info['access_token'], $info['expires_in']);
                     Cache::put('app.apiProviders.' . $provider . '.refresh_token', $info['refresh_token'], $info['expires_in']);
+                    Cache::put('app.lp_token_expires_in', $info['expires_in']);
                     break;
-            }
+            } // Not required for omniva, so skipping
         }
 
         $lpCacheResult = Cache::has('app.apiProviders.' . $provider . '.access_token')
@@ -33,11 +34,17 @@ class TokenCacheService
     /**
      * Gets API token from cache
      * 
+     * @param bool $refresh: indicates a refresh token is needed to get a new access token
+     * 
      * @return string
      */
-    public function getLpExpressApiAccessToken(): ?string
+    public function getLpExpressApiAccessToken(bool $refresh = false): ?string
     {
         $key = 'app.apiProviders.lp_express.access_token';
+
+        if ($refresh) {
+            $key = 'app.apiProviders.lp_express.refresh_token';
+        }
 
         if (!Cache::has($key)) {
             return null;
@@ -46,7 +53,11 @@ class TokenCacheService
         $token = Cache::get($key);
 
         if ($token) {
-            return 'Bearer ' . $token;
+            if (!$refresh) {
+                return 'Bearer ' . $token;
+            } else {
+                return $token;
+            }
         }
         return null;
     }

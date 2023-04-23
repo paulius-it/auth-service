@@ -20,9 +20,12 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
     {
     }
 
-    public function authenticate(?array $providers = null,
-    bool $cacheToken = false): JsonResponse
-    {
+    public function authenticate(
+        ?array $providers = null,
+        bool $cacheTokens = false,
+        bool $needsRefresh = false,
+        string $refreshToken = ''
+    ): JsonResponse {
         $this->errors = collect();
         if (!$providers) {
             $this->addError('No APIs to authenticate');
@@ -38,11 +41,20 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
             $this->baseApiUrl = ProviderConstants::BASE_LP_EXPRESS_API_URL;
             $requestParams = [
                 'scope' => ProviderConstants::LP_EXPRESS_API_SCOPE,
-                'grant_type' => ProviderConstants::LP_EXPRESS_API_GRANT_TYPE,
+                //'grant_type' => 
                 'clientSystem' => ProviderConstants::LP_EXPRESS_API_CLIENT_SYSTEM,
-                'username' => $lpConfig['api_access_key'],
-                'password' => $lpConfig['api_secret'],
+                //'username' => $lpConfig['api_access_key'],
+                //'password' => ,
             ];
+
+            if (!$needsRefresh) {
+                $requestParams['grant_type'] = ProviderConstants::LP_EXPRESS_API_GRANT_TYPE_PASSWORD;
+                $requestParams['username'] = $lpConfig['api_access_key'];
+                $requestParams['password'] = $lpConfig['api_secret'];
+            } else {
+                $requestParams['grant_type'] = ProviderConstants::LP_EXPRESS_API_GRANT_TYPE_REFRESH;
+                $requestParams['refresh_token'] = $refreshToken;
+            }
         }
 
         try {
@@ -68,10 +80,10 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
             $response['lp_api_response'] = $lpApiResponse->body();
         }
 
-        if($cacheToken) {
+        if ($cacheToken) {
             $tokensCached = $this->cacheLpApiTokens($lpApiResponse);
 
-        $response['lp_token_cached'] = $tokensCached;
+            $response['lp_token_cached'] = $tokensCached;
         } else {
             $response['lp_token_cached'] = $cacheToken;
         }
