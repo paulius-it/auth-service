@@ -41,10 +41,7 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
             $this->baseApiUrl = ProviderConstants::BASE_LP_EXPRESS_API_URL;
             $requestParams = [
                 'scope' => ProviderConstants::LP_EXPRESS_API_SCOPE,
-                //'grant_type' => 
                 'clientSystem' => ProviderConstants::LP_EXPRESS_API_CLIENT_SYSTEM,
-                //'username' => $lpConfig['api_access_key'],
-                //'password' => ,
             ];
 
             if (!$needsRefresh) {
