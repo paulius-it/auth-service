@@ -54,6 +54,10 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
             }
         }
 
+        if ($omnivaConfig['api_access_key'] && $omnivaConfig['api_secret']) {
+            $this->baseApiUrl = ProviderConstants::BASE_LP_EXPRESS_API_URL;
+        }
+
         try {
             $lpApiResponse = HTTP::asForm()->post($this->baseApiUrl, $requestParams);
         } catch (\Exception $e) {
@@ -75,6 +79,10 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
 
         if ($lpApiResponse) {
             $response['lp_api_response'] = $lpApiResponse->body();
+        }
+
+        if ($omnivaConfig['api_access_key'] && $omnivaConfig['api_secret']) {
+            $response['omniva_credentials'] = $omnivaConfig;
         }
 
         if ($cacheTokens) {

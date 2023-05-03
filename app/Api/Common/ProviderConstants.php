@@ -14,4 +14,5 @@ class ProviderConstants
     public const LP_EXPRESS_API_GRANT_TYPE_PASSWORD = 'password';
     public const LP_EXPRESS_API_GRANT_TYPE_REFRESH = 'refresh_token';
     public const LP_EXPRESS_API_CLIENT_SYSTEM = 'PUBLIC';
+    public const BASE_OMNIVA_API_URL = 'https://edixml.post.ee';
 }
