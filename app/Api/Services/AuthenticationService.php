@@ -82,7 +82,7 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
         }
 
         if ($omnivaConfig['api_access_key'] && $omnivaConfig['api_secret']) {
-            $response['omniva_credentials'] = $omnivaConfig;
+            $response['omniva_auth_data'] = $omnivaConfig;
         }
 
         if ($cacheTokens) {
