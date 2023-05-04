@@ -56,7 +56,7 @@ class TokenCacheService
 
         if ($token) {
             if (!$refresh) {
-                return 'Bearer ' . $token;
+                return $token;
             } else {
                 return $token;
             }
