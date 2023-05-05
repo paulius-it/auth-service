@@ -46,7 +46,7 @@ class AuthenticationController extends ApiController
         $provider = $request->input('provider') ?? null;
 
         $result = [];
-        $result['status_code'] = 400;
+        $result['status_code'] = 404;
         $result['message'] = 'No provider was given or it is not available';
 
         switch ($provider) {
@@ -62,7 +62,7 @@ class AuthenticationController extends ApiController
                         $result['lp_express_refresh_token'] = $this->cache->getLpExpressApiToken(refresh: true);
                     }
                 } else {
-                    $result['status_code'] = 400;
+                    $result['status_code'] = 404;
                     $result['message'] = 'LP token was not found!';
                 }
                 break;
