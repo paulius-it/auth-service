@@ -70,7 +70,7 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
                 'error' => $this->errors?->first(),
             ];
 
-            return response()->json($response);
+            return response()->json($response, $response['status_code']);
         }
 
         $response = [
@@ -78,7 +78,7 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
         ];
 
         if ($lpApiResponse) {
-            $response['lp_api_response'] = $lpApiResponse->body();
+            $response['lp_api_response'] = $lpApiResponse->json();
         }
 
         if ($omnivaConfig['api_access_key'] && $omnivaConfig['api_secret']) {
