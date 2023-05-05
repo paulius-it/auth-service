@@ -66,7 +66,7 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
 
         if ($this->errors->count() > 0) {
             $response = [
-                'status_code' => 401,
+                'status_code' => 400,
                 'error' => $this->errors?->first(),
             ];
 
@@ -117,9 +117,6 @@ class AuthenticationService implements Authenticatable, ConfigurationInterface
 
         return $config;
     }
-
-
-
 
     private function addError(string $error)
     {
