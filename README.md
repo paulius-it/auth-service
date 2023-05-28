@@ -1,8 +1,8 @@
-# Shipping authentication service
+# Shipping Authentication service
 
 ## How to launch
 - PHP8.1 and Composer should be installed;
-- Docker and cocker compose should be available in order to launch it in the container.
+- Docker and Docker compose should be available in order to launch it in the container.
 In the terminal run:
 ```bash
 cp .env.example .env
@@ -11,4 +11,4 @@ vendor/bin/sail artisan key:generate
 vendor/bin/sail up -d
 ```
 
-Authentication service is ready - it should be available at 'localhost:8000'.
+Authentication service is ready - it should be available at 'localhost:8000', where 'localhost' is the domain configured on Docker setup, it might be different depending on the Docker configs in the system.
